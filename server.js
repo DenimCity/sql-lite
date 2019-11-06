@@ -10,8 +10,24 @@ const connection = new Sequelize('db', 'user', 'password', {
 	storage: 'db.sqlite'
 });
 
+const User = connection.define('User', {
+	userId: {
+		type: Sequelize.UUID,
+		primaryKey: true,
+		defaultValue: Sequelize.UUIDV4
+	},
+	name: Sequelize.STRING,
+	bio: Sequelize.TEXT
+});
+
 connection
-	.authenticate()
+	.sync({
+		logging: console.log(),
+		force: true
+	})
+	.then(() => {
+		User.bulkCreate([ { name: 'John', bio: 'I am Him' }, { name: 'Jean', bio: 'I am also Him' } ]);
+	})
 	.then(() => {
 		console.log('Connection to Database created');
 		app.listen(PORT, () => {
